@@ -15,7 +15,5 @@ public class Borne extends Carte{
     }
 
     @Override
-    public void appliqueEffet(Jeu jeu, EtatJoueur joueur) throws IllegalArgumentException {
-
-    }
+    public void appliqueEffet(Jeu jeu, EtatJoueur joueur) throws IllegalArgumentException;
 }
