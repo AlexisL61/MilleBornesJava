@@ -3,6 +3,10 @@ package mille_bornes;
 import mille_bornes.cartes.Borne;
 import mille_bornes.cartes.Carte;
 import mille_bornes.cartes.attaques.*;
+import mille_bornes.cartes.bottes.AsDuVolant;
+import mille_bornes.cartes.bottes.Citerne;
+import mille_bornes.cartes.bottes.Increvable;
+import mille_bornes.cartes.bottes.VehiculePrioritaire;
 import mille_bornes.cartes.parades.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -82,6 +86,10 @@ public class TasDeCartes {
             cartes.add(new Borne(200));
         }
 
+        cartes.add(new AsDuVolant());
+        cartes.add(new Citerne());
+        cartes.add(new Increvable());
+        cartes.add(new VehiculePrioritaire());
     }
 
     public void melangeCartes(){

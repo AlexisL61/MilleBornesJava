@@ -1,24 +1,23 @@
 package mille_bornes;
 
-import mille_bornes.cartes.Attaque;
-import mille_bornes.cartes.Bataille;
-import mille_bornes.cartes.Carte;
+import mille_bornes.cartes.*;
 import mille_bornes.cartes.attaques.Accident;
 import mille_bornes.cartes.attaques.Crevaison;
 import mille_bornes.cartes.attaques.FeuRouge;
 import mille_bornes.cartes.attaques.PanneEssence;
-import mille_bornes.cartes.bottes.Botte;
+import mille_bornes.cartes.Botte;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
 public class EtatJoueur {
 
-    private Joueur joueur;
-    private Stack<Bataille> pileBataille;
-    private List<Carte> main;
-    private List<Botte> bottes;
+    private final Joueur joueur;
+    private final Stack<Bataille> pileBataille = new Stack<>();
+    private final List<Carte> main = new ArrayList<>();
+    private final List<Botte> bottes = new ArrayList<>();
     private int km;
     private boolean limiteVitesse;
 
@@ -34,7 +33,6 @@ public class EtatJoueur {
         this.km += km;
 
     }
-
 
     public String ditPourquoiPeutPasAvancer() {
         if (!pileBataille.empty()) {
@@ -62,12 +60,12 @@ public class EtatJoueur {
         this.limiteVitesse = limiteVitesse;
     }
 
-    public Bataille getPileBataille() {
+    public Bataille getBataille() {
         if (!pileBataille.empty()) return pileBataille.peek();
         return null;
     }
 
-    public void setPileBataille(Bataille carte) {
+    public void setBataille(Bataille carte) {
         this.pileBataille.push(carte);
     }
 
@@ -88,27 +86,40 @@ public class EtatJoueur {
     }
 
     public void attaque(Jeu jeu, Attaque carte) throws IllegalStateException {
-        if (pileBataille.isEmpty()) {
+
             //Regarde si la personne est sensible à l'attaque
             for (Botte botte : bottes) {
                 if (botte.contre(carte)) {
                     throw new IllegalStateException();
                 }
             }
+
+            //Regarde s'il y a un coup fourré
+            int i = 0;
             for (Carte c : main) {
                 if (c instanceof Botte) {
                     if (((Botte) c).contre(carte)) {
                         //COUP-FOURRE
-                        jeu.defausse(carte);
-                        //joueur.pioche();
-                        //jeu.setProchainJoueur(joueur);
-                        //jeu.activeProchainJoueurEtTireCarte();
+                        addBotte((Botte) c);
+                        joueur.defausseCarte(jeu,i);
+                        //jeu.defausse(carte);
+
+                        jeu.setProchainJoueur(joueur);
+                        jeu.activeProchainJoueurEtTireCarte();
+                        jeu.setProchainJoueur(joueur);
+                        return;
                     }
                 }
+                i++;
             }
-            pileBataille.add(carte);
-        }
-        throw new IllegalStateException();
+
+            //Applique la carte
+            try {
+                carte.appliqueEffet(jeu, this);
+            } catch (IllegalStateException e){
+                throw new IllegalStateException();
+            }
+
     }
 
     public String toString() {
@@ -117,19 +128,19 @@ public class EtatJoueur {
 
         message.append(km).append(" km, ");
         if (limiteVitesse) {
-            message.append("(50), ");
+            message.append("limité à 50km/h, ");
         } else {
-            message.append("null, ");
+            message.append("non limité, ");
         }
 
         message.append("[");
         for (Botte botte : bottes) {
             message.append(botte.nom).append(", ");
         }
-        message = new StringBuilder(message.substring(0, message.length() - 3));
+        message = bottes.size()==0?message:new StringBuilder(message.substring(0, message.length() - 2));
         message.append("]");
 
-        if (!pileBataille.empty()) message.append(", ").append(pileBataille.peek().nom);
+        if (!pileBataille.empty() && pileBataille.peek() instanceof Attaque) message.append(", ").append(pileBataille.peek().nom);
 
         return message.toString();
     }
@@ -146,5 +157,30 @@ public class EtatJoueur {
         jeu.defausse(main.get(numero));
         main.remove(numero);
     }
+
+    public void joueCarte(Jeu jeu, int numero) throws IllegalStateException {
+
+        Carte laCarteAJouer = main.get(numero);
+
+        if (laCarteAJouer instanceof Attaque){
+            Joueur joueurAAttaquer = joueur.choisitAdversaire(laCarteAJouer);
+            if (joueurAAttaquer != null){
+                joueCarte(jeu, numero, joueurAAttaquer);
+            }
+        }
+
+        if (laCarteAJouer instanceof Parade || laCarteAJouer instanceof Botte || laCarteAJouer instanceof Borne){
+            laCarteAJouer.appliqueEffet(jeu, this);
+        }
+    }
+
+    public void joueCarte(Jeu jeu, int numero, Joueur adversaire) throws IllegalStateException{
+        try {
+            adversaire.attaque(jeu, (Attaque) main.get(numero));
+        }catch(IllegalStateException e){
+            throw new IllegalStateException();
+        }
+    }
+
 }
 

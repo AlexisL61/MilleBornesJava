@@ -9,5 +9,11 @@ public abstract class Parade extends Bataille{
         super(nom, Categorie.Parade);
     }
 
-    public void appliqueEffet(Jeu jeu, EtatJoueur joueur) throw IllegalStateException;
+    public void appliqueEffet(Jeu jeu, EtatJoueur joueur) throws IllegalStateException{
+        if (joueur.getBataille() != null && contre((Attaque) joueur.getBataille())) {
+            joueur.setBataille(this);
+        }else{
+            throw new IllegalStateException();
+        }
+    }
 }

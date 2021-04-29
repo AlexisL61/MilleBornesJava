@@ -21,5 +21,11 @@ public class LimiteVitesse extends Attaque {
     }
 
     @Override
-    public void appliqueEffet(Jeu jeu, EtatJoueur joueur) throws IllegalStateException;
+    public void appliqueEffet(Jeu jeu, EtatJoueur joueur) throws IllegalStateException{
+        if (!joueur.getLimiteVitesse()){
+            joueur.setLimiteVitesse(true);
+        }else{
+            throw new IllegalStateException();
+        }
+    }
 }

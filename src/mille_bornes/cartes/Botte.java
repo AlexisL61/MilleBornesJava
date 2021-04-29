@@ -1,4 +1,4 @@
-package mille_bornes.cartes.bottes;
+package mille_bornes.cartes;
 
 import mille_bornes.EtatJoueur;
 import mille_bornes.Jeu;
@@ -14,5 +14,10 @@ public abstract class Botte extends Carte {
 
     public abstract boolean contre(Attaque carte);
 
-    public abstract void appliqueEffet(Jeu jeu, EtatJoueur joueur);
+    public void appliqueEffet(Jeu jeu, EtatJoueur joueur) {
+        if (joueur.getBataille() != null && contre((Attaque) joueur.getBataille())){
+            joueur.defausseBataille(jeu);
+        }
+        joueur.addBotte(this);
+    }
 }

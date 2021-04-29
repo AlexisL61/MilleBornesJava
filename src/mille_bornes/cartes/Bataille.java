@@ -48,5 +48,5 @@ public abstract class Bataille extends Carte {
     public abstract boolean contre(Attaque carte);
 
     @Override
-    public void appliqueEffet(Jeu jeu, EtatJoueur joueur) throws IllegalStateException;
+    public abstract void appliqueEffet(Jeu jeu, EtatJoueur joueur) throws IllegalStateException;
 }
