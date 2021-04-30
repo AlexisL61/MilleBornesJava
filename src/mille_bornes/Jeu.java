@@ -49,14 +49,17 @@ public class Jeu {
     public String toString() {
         StringBuilder finalString = new StringBuilder();
         for (Joueur joueur : joueurs) {
-            if (joueurActif.equals(joueur)) finalString.append("> ");
+            if (joueurActif.equals(joueur)) finalString.append("\u001B[36m> ");
             finalString.append(joueur.toString());
+            finalString.append("\u001B[0m\n");
         }
         return finalString.toString();
     }
 
     public boolean joue() {
         activeProchainJoueurEtTireCarte();
+        System.out.println("-------------------------------------------");
+        System.out.println(this.toString());
         System.out.println();
         System.out.println("---- AU TOUR DE " + joueurActif.nom + " ----");
         System.out.println(joueurActif.toString());
