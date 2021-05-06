@@ -8,6 +8,9 @@ import mille_bornes.cartes.bottes.Citerne;
 import mille_bornes.cartes.bottes.Increvable;
 import mille_bornes.cartes.bottes.VehiculePrioritaire;
 import mille_bornes.cartes.parades.*;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -18,6 +21,12 @@ public class TasDeCartes {
     public TasDeCartes(boolean creerLesCartes) {
         if (creerLesCartes){
             creeLesCartes();
+        }
+    }
+
+    public TasDeCartes(JSONArray json) {
+        for (int i = 0; i<json.length(); i++){
+            cartes.add(Carte.newCarte((JSONObject) json.get(i)));
         }
     }
 
@@ -114,5 +123,13 @@ public class TasDeCartes {
 
     public void pose(Carte carte){
         cartes.add(0, carte);
+    }
+
+    public JSONArray toJson(){
+        JSONArray jsonArray = new JSONArray();
+        for (Carte carte: cartes){
+            jsonArray.put(carte.toJson());
+        }
+        return jsonArray;
     }
 }

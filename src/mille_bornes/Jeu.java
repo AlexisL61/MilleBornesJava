@@ -1,11 +1,12 @@
 package mille_bornes;
 
+import mille_bornes.cartes.Borne;
 import mille_bornes.cartes.Carte;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 
 public class Jeu {
 
@@ -21,6 +22,22 @@ public class Jeu {
 
     public Jeu(Joueur... joueurs) {
         ajouteJoueurs(joueurs);
+    }
+
+    public Jeu(JSONObject save){
+
+        JSONArray totalJoueurs = (JSONArray) save.get("players");
+        JSONObject jeu = (JSONObject) save.get("jeu");
+        for (int i = 0;i<totalJoueurs.length();i++){
+            joueurs.add(new Joueur((JSONObject) totalJoueurs.get(i)));
+        }
+        this.prochainJoueur = joueurs.get((Integer) jeu.get("currentPlayer"));
+        for (int i = 0; i < joueurs.size(); i++) {
+            joueurs.get(i).setProchainJoueur(joueurs.get((i + 1) % joueurs.size()));
+        }
+
+        this.defausse = new TasDeCartes((JSONArray) jeu.get("defausse"));
+        this.sabot = new TasDeCartes((JSONArray) jeu.get("sabot"));
     }
 
     public void ajouteJoueurs(Joueur... joueurs) throws IllegalStateException {
@@ -56,8 +73,41 @@ public class Jeu {
         return finalString.toString();
     }
 
-    public boolean joue() {
-        activeProchainJoueurEtTireCarte();
+    public void sauvegarder() throws IOException {
+        String chemin = System.getenv("APPDATA");
+        File folder = new File(chemin+"\\"+"mille_borne_java_tp22c");
+        File file = new File(chemin+"\\"+"mille_borne_java_tp22c"+"\\save.json");
+
+        if (!folder.exists()) {
+            folder.mkdir();
+        }
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+
+        JSONObject saveData = new JSONObject();
+        JSONObject jeuData = new JSONObject();
+        JSONArray players = new JSONArray();
+
+        for (int i = 0;i<this.joueurs.size();i++){
+            players.put(this.joueurs.get(i).toJson());
+            if (this.joueurs.get(i) == joueurActif){
+                jeuData.put("currentPlayer",i);
+            }
+        }
+        jeuData.put("sabot",sabot.toJson());
+        jeuData.put("defausse",defausse.toJson());
+        saveData.put("players",players);
+        saveData.put("jeu",jeuData);
+
+        FileWriter fw = new FileWriter(file.getAbsoluteFile());
+        BufferedWriter bw = new BufferedWriter(fw);
+        bw.write(saveData.toString());
+        bw.close();
+    }
+
+    public boolean joue(boolean pioche) throws IOException {
+        activeProchainJoueurEtTireCarte(pioche);
         System.out.println("-------------------------------------------");
         System.out.println(this.toString());
         System.out.println();
@@ -67,6 +117,7 @@ public class Jeu {
         System.out.println();
         boolean succeed = false;
         while (!succeed) {
+            this.sauvegarder();
             //Si le joueur actif change pendant un coup fourré, le joueur se faisant défausser une carte reste le même
             Joueur currentJoueur = joueurActif;
             int carteChoisie = currentJoueur.choisitCarte();
@@ -77,16 +128,20 @@ public class Jeu {
                 currentJoueur.defausseCarte(this, Math.abs(carteChoisie) - 1);
                 succeed = true;
             } catch (IllegalStateException | IllegalArgumentException e) {
-                System.err.println("VOUS NE POUVEZ PAS POSER CETTE CARTE!!!");
+                if (currentJoueur.getMain().get(carteChoisie-1) instanceof Borne){
+                    System.err.println(currentJoueur.ditPourquoiPeutPasAvancer());
+                }else {
+                    System.err.println("VOUS NE POUVEZ PAS POSER CETTE CARTE!!!");
+                }
             }
         }
         return estPartieFinie();
     }
 
-    public void activeProchainJoueurEtTireCarte() {
+    public void activeProchainJoueurEtTireCarte(boolean pioche) {
         joueurActif = prochainJoueur;
         prochainJoueur = joueurActif.getProchainJoueur();
-        joueurActif.prendCarte(pioche());
+        if (pioche) joueurActif.prendCarte(pioche());
     }
 
     public boolean estPartieFinie() {
@@ -143,6 +198,23 @@ public class Jeu {
 
     public Carte regardeDefausse() {
         return defausse.regarde();
+    }
+
+    public static String chargerSave(){
+        String chemin = System.getenv("APPDATA");
+        File file = new File(chemin+"\\"+"mille_borne_java_tp22c"+"\\save.json");
+        try {
+            Scanner myReader = new Scanner(file);
+            StringBuilder data = new StringBuilder();
+            while (myReader.hasNextLine()) {
+                data.append(myReader.nextLine());
+            }
+            myReader.close();
+            return data.toString();
+        } catch (FileNotFoundException e){
+            return null; //Le fichier n'existe pas
+        }
+
     }
 
 

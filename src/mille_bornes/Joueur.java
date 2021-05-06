@@ -4,12 +4,10 @@ import mille_bornes.cartes.Attaque;
 import mille_bornes.cartes.Bataille;
 import mille_bornes.cartes.Carte;
 import mille_bornes.cartes.Botte;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-import java.util.InputMismatchException;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
-import java.util.ArrayList;
+import java.util.*;
 
 public class Joueur {
 
@@ -20,6 +18,24 @@ public class Joueur {
 
     public Joueur(String nom) {
         this.nom = nom;
+    }
+
+    public Joueur(JSONObject joueur){
+        this.nom = (String) joueur.get("nom");
+        this.etat.setKm((Integer) joueur.get("km"));
+        this.etat.setLimiteVitesse((boolean) joueur.get("limite"));
+        JSONArray cartes = ((JSONArray) joueur.get("cartes"));
+        JSONArray bottes = ((JSONArray) joueur.get("bottes"));
+        JSONArray pileBataille = ((JSONArray) joueur.get("pileBataille"));
+        for (int i = 0;i<cartes.length();i++){
+            this.etat.getMain().add(Carte.newCarte((JSONObject) cartes.get(i)));
+        }
+        for (int i = 0;i<bottes.length();i++){
+            this.etat.addBotte((Botte) Carte.newCarte((JSONObject) bottes.get(i)));
+        }
+        for (int i  = pileBataille.length()-1; i>=0; i--){ //Pile renversée donc on part de la fin
+            etat.setBataille((Bataille) Carte.newCarte((JSONObject) pileBataille.get(i)));
+        }
     }
 
     public Joueur getProchainJoueur() {
@@ -126,8 +142,8 @@ public class Joueur {
         etat.attaque(jeu, carte);
     }
 
-    public void ditPourquoiPeutPasAvancer() {
-        etat.ditPourquoiPeutPasAvancer();
+    public String ditPourquoiPeutPasAvancer() {
+        return etat.ditPourquoiPeutPasAvancer();
     }
 
     public String montreLesCartes() {
@@ -136,6 +152,34 @@ public class Joueur {
             cartes.append(i + 1).append(" : ").append(getMain().get(i).toString()).append("\n");
         }
         return cartes.toString();
+    }
+
+    public JSONObject toJson(){
+        JSONObject joueurObject = new JSONObject();
+        joueurObject.put("km",etat.getKm());
+        joueurObject.put("limite",etat.getLimiteVitesse());
+        joueurObject.put("nom",nom);
+        JSONArray carteObject = new JSONArray();
+        for (Carte carte:etat.getMain()){
+            carteObject.put(carte.toJson());
+        }
+        JSONArray botteObject = new JSONArray();
+        for (Carte botte:etat.getBottes()){
+            botteObject.put(botte.toJson());
+        }
+        joueurObject.put("cartes",carteObject);
+        joueurObject.put("bottes",botteObject);
+
+        Stack<Bataille> copiePile = (Stack<Bataille>) etat.getPileBataille().clone();
+
+        JSONArray batailleObject = new JSONArray();
+
+        while(!copiePile.isEmpty()){
+            batailleObject.put(copiePile.pop().toJson());
+        }
+
+        joueurObject.put("pileBataille", batailleObject);
+        return joueurObject;
     }
 
     @Override

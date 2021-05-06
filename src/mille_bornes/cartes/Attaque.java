@@ -14,7 +14,7 @@ public abstract class Attaque extends Bataille{
     }
 
     public void appliqueEffet(Jeu jeu, EtatJoueur joueur) throws IllegalStateException{
-        if (joueur.getBataille() == null){
+        if (joueur.getBataille() == null || joueur.getBataille() instanceof Parade){
             joueur.setBataille(this);
         }else{
             throw new IllegalStateException();

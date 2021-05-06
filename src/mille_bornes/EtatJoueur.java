@@ -29,6 +29,10 @@ public class EtatJoueur {
         return km;
     }
 
+    public void setKm(int km){
+        this.km = km;
+    }
+
     public void ajouteKm(int km) {
         this.km += km;
 
@@ -63,6 +67,10 @@ public class EtatJoueur {
     public Bataille getBataille() {
         if (!pileBataille.empty()) return pileBataille.peek();
         return null;
+    }
+
+    public Stack<Bataille> getPileBataille() {
+        return pileBataille;
     }
 
     public void setBataille(Bataille carte) {
@@ -105,7 +113,7 @@ public class EtatJoueur {
                         //jeu.defausse(carte);
 
                         jeu.setProchainJoueur(joueur);
-                        jeu.activeProchainJoueurEtTireCarte();
+                        jeu.activeProchainJoueurEtTireCarte(true);
                         jeu.setProchainJoueur(joueur);
                         return;
                     }
@@ -170,7 +178,11 @@ public class EtatJoueur {
         }
 
         if (laCarteAJouer instanceof Parade || laCarteAJouer instanceof Botte || laCarteAJouer instanceof Borne){
-            laCarteAJouer.appliqueEffet(jeu, this);
+            try {
+                laCarteAJouer.appliqueEffet(jeu, this);
+            } catch (IllegalStateException e){
+                throw e;
+            }
         }
     }
 
@@ -178,7 +190,7 @@ public class EtatJoueur {
         try {
             adversaire.attaque(jeu, (Attaque) main.get(numero));
         }catch(IllegalStateException e){
-            throw new IllegalStateException();
+            throw e;
         }
     }
 
