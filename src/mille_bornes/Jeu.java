@@ -17,19 +17,46 @@ public class Jeu {
     private TasDeCartes sabot;
 
     public Jeu() {
-
+        Scanner sc = new Scanner(System.in);
+        String reponse = "";
+        while (!reponse.equals("fini") && joueurs.size() < 4 || joueurs.size() <= 1) {
+            String reponseBot;
+            System.out.println("Voulez-vous jouer avec un bot? (Tapez oui pour jouer avec un bot, autre chose sinon)");
+            reponseBot = sc.nextLine();
+            int botDifficulty = 0;
+            if (reponseBot.equals("oui")) {
+                while (botDifficulty != 1 && botDifficulty != 2 && botDifficulty != 3) {
+                    System.out.println("Quel sera le niveau de ce bot (1 pour facile, 2 pour moyen, 3 pour difficile)");
+                    botDifficulty = sc.nextInt();
+                    sc.nextLine();
+                }
+            }
+            System.out.println("Entrez le nom du joueur/bot n°" + (joueurs.size() + 1) + ". (Tapez \"fini\" si vous ne voulez entrer de joueur.)");
+            reponse = sc.nextLine();
+            if (!reponse.equals("fini")) {
+                if (botDifficulty > 0 && botDifficulty < 4) {
+                    ajouteJoueurs(new Bot(reponse, Difficulte.values()[botDifficulty - 1]));
+                } else {
+                    ajouteJoueurs(new Joueur(reponse));
+                }
+            }
+        }
     }
 
     public Jeu(Joueur... joueurs) {
         ajouteJoueurs(joueurs);
     }
 
-    public Jeu(JSONObject save){
+    public Jeu(JSONObject save) {
 
         JSONArray totalJoueurs = (JSONArray) save.get("players");
         JSONObject jeu = (JSONObject) save.get("jeu");
-        for (int i = 0;i<totalJoueurs.length();i++){
-            joueurs.add(new Joueur((JSONObject) totalJoueurs.get(i)));
+        for (int i = 0; i < totalJoueurs.length(); i++) {
+            if (!(boolean)((JSONObject) totalJoueurs.get(i)).get("bot")) {
+                joueurs.add(new Joueur((JSONObject) totalJoueurs.get(i)));
+            }else{
+                joueurs.add(new Bot((JSONObject) totalJoueurs.get(i)));
+            }
         }
         this.prochainJoueur = joueurs.get((Integer) jeu.get("currentPlayer"));
         for (int i = 0; i < joueurs.size(); i++) {
@@ -75,8 +102,8 @@ public class Jeu {
 
     public void sauvegarder() throws IOException {
         String chemin = System.getenv("APPDATA");
-        File folder = new File(chemin+"\\"+"mille_borne_java_tp22c");
-        File file = new File(chemin+"\\"+"mille_borne_java_tp22c"+"\\save.json");
+        File folder = new File(chemin + "\\" + "mille_borne_java_tp22c");
+        File file = new File(chemin + "\\" + "mille_borne_java_tp22c" + "\\save.json");
 
         if (!folder.exists()) {
             folder.mkdir();
@@ -89,16 +116,16 @@ public class Jeu {
         JSONObject jeuData = new JSONObject();
         JSONArray players = new JSONArray();
 
-        for (int i = 0;i<this.joueurs.size();i++){
+        for (int i = 0; i < this.joueurs.size(); i++) {
             players.put(this.joueurs.get(i).toJson());
-            if (this.joueurs.get(i) == joueurActif){
-                jeuData.put("currentPlayer",i);
+            if (this.joueurs.get(i) == joueurActif) {
+                jeuData.put("currentPlayer", i);
             }
         }
-        jeuData.put("sabot",sabot.toJson());
-        jeuData.put("defausse",defausse.toJson());
-        saveData.put("players",players);
-        saveData.put("jeu",jeuData);
+        jeuData.put("sabot", sabot.toJson());
+        jeuData.put("defausse", defausse.toJson());
+        saveData.put("players", players);
+        saveData.put("jeu", jeuData);
 
         FileWriter fw = new FileWriter(file.getAbsoluteFile());
         BufferedWriter bw = new BufferedWriter(fw);
@@ -123,14 +150,20 @@ public class Jeu {
             int carteChoisie = currentJoueur.choisitCarte();
             try {
                 if (carteChoisie > 0) {
+                    if (currentJoueur instanceof Bot)
+                        System.out.println(currentJoueur.nom + " utilise la carte " + currentJoueur.getMain().get(carteChoisie - 1).toString());
                     currentJoueur.joueCarte(this, carteChoisie - 1);
+                } else {
+                    if (currentJoueur instanceof Bot)
+                        System.out.println(currentJoueur.nom + " defausse la carte " + currentJoueur.getMain().get(Math.abs(carteChoisie) - 1).toString());
+                    currentJoueur.defausseCarte(this, Math.abs(carteChoisie) - 1);
                 }
-                currentJoueur.defausseCarte(this, Math.abs(carteChoisie) - 1);
+
                 succeed = true;
             } catch (IllegalStateException | IllegalArgumentException e) {
-                if (currentJoueur.getMain().get(carteChoisie-1) instanceof Borne){
+                if (currentJoueur.getMain().get(carteChoisie - 1) instanceof Borne) {
                     System.err.println(currentJoueur.ditPourquoiPeutPasAvancer());
-                }else {
+                } else {
                     System.err.println("VOUS NE POUVEZ PAS POSER CETTE CARTE!!!");
                 }
             }
@@ -200,9 +233,9 @@ public class Jeu {
         return defausse.regarde();
     }
 
-    public static String chargerSave(){
+    public static String chargerSave() {
         String chemin = System.getenv("APPDATA");
-        File file = new File(chemin+"\\"+"mille_borne_java_tp22c"+"\\save.json");
+        File file = new File(chemin + "\\" + "mille_borne_java_tp22c" + "\\save.json");
         try {
             Scanner myReader = new Scanner(file);
             StringBuilder data = new StringBuilder();
@@ -211,7 +244,7 @@ public class Jeu {
             }
             myReader.close();
             return data.toString();
-        } catch (FileNotFoundException e){
+        } catch (FileNotFoundException e) {
             return null; //Le fichier n'existe pas
         }
 

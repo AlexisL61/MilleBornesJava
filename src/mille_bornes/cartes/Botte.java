@@ -15,9 +15,10 @@ public abstract class Botte extends Carte {
     public abstract boolean contre(Attaque carte);
 
     public void appliqueEffet(Jeu jeu, EtatJoueur joueur) {
-        if (joueur.getBataille() != null && contre((Attaque) joueur.getBataille())){
+        if (joueur.getBataille() != null && joueur.getBataille() instanceof Attaque && contre((Attaque) joueur.getBataille())){
             joueur.defausseBataille(jeu);
         }
         joueur.addBotte(this);
+        jeu.setProchainJoueur(joueur.getJoueur());
     }
 }

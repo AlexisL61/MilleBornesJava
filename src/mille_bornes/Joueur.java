@@ -4,6 +4,7 @@ import mille_bornes.cartes.Attaque;
 import mille_bornes.cartes.Bataille;
 import mille_bornes.cartes.Carte;
 import mille_bornes.cartes.Botte;
+import mille_bornes.cartes.attaques.FeuRouge;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -18,6 +19,7 @@ public class Joueur {
 
     public Joueur(String nom) {
         this.nom = nom;
+        etat.setBataille(new FeuRouge());
     }
 
     public Joueur(JSONObject joueur){
@@ -56,6 +58,10 @@ public class Joueur {
 
     public boolean getLimiteVitesse() {
         return etat.getLimiteVitesse();
+    }
+
+    public EtatJoueur getEtat() {
+        return etat;
     }
 
     public int choisitCarte() {
@@ -169,6 +175,7 @@ public class Joueur {
         }
         joueurObject.put("cartes",carteObject);
         joueurObject.put("bottes",botteObject);
+        joueurObject.put("bot",false);
 
         Stack<Bataille> copiePile = (Stack<Bataille>) etat.getPileBataille().clone();
 

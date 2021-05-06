@@ -1,12 +1,11 @@
 package mille_bornes;
 
 import mille_bornes.cartes.*;
-import mille_bornes.cartes.attaques.Accident;
-import mille_bornes.cartes.attaques.Crevaison;
-import mille_bornes.cartes.attaques.FeuRouge;
-import mille_bornes.cartes.attaques.PanneEssence;
+import mille_bornes.cartes.attaques.*;
 import mille_bornes.cartes.Botte;
+import mille_bornes.cartes.parades.FinDeLimite;
 
+import javax.naming.LimitExceededException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -35,7 +34,10 @@ public class EtatJoueur {
 
     public void ajouteKm(int km) {
         this.km += km;
+    }
 
+    public Joueur getJoueur() {
+        return joueur;
     }
 
     public String ditPourquoiPeutPasAvancer() {
@@ -65,8 +67,8 @@ public class EtatJoueur {
     }
 
     public Bataille getBataille() {
-        if (!pileBataille.empty()) return pileBataille.peek();
-        return null;
+        if (pileBataille.isEmpty()) return null;
+        return pileBataille.peek();
     }
 
     public Stack<Bataille> getPileBataille() {
@@ -113,7 +115,8 @@ public class EtatJoueur {
                         //jeu.defausse(carte);
 
                         jeu.setProchainJoueur(joueur);
-                        jeu.activeProchainJoueurEtTireCarte(true);
+                        if (jeu.getNbCartesSabot() != 0) jeu.activeProchainJoueurEtTireCarte(true); //Sinon c'est la fin de la partie
+
                         jeu.setProchainJoueur(joueur);
                         return;
                     }
@@ -183,6 +186,11 @@ public class EtatJoueur {
             } catch (IllegalStateException e){
                 throw e;
             }
+        }
+        if (laCarteAJouer instanceof Borne || laCarteAJouer instanceof LimiteVitesse || laCarteAJouer instanceof FinDeLimite){
+            this.defausseCarte(jeu,numero);
+        }else{
+            main.remove(numero);
         }
     }
 
