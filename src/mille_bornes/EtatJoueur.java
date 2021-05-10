@@ -110,10 +110,9 @@ public class EtatJoueur {
                 if (c instanceof Botte) {
                     if (((Botte) c).contre(carte)) {
                         //COUP-FOURRE
-                        addBotte((Botte) c);
+                        System.out.println("\u001B[35m" + joueur.nom + " fait un coup fourré !\u001B[0m");
+                        ((Botte) c).appliqueEffet(jeu, this);
                         joueur.defausseCarte(jeu,i);
-                        //jeu.defausse(carte);
-
                         jeu.setProchainJoueur(joueur);
                         if (jeu.getNbCartesSabot() != 0) jeu.activeProchainJoueurEtTireCarte(true); //Sinon c'est la fin de la partie
 
