@@ -5,7 +5,6 @@ import mille_bornes.cartes.attaques.*;
 import mille_bornes.cartes.Botte;
 import mille_bornes.cartes.parades.FinDeLimite;
 
-import javax.naming.LimitExceededException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

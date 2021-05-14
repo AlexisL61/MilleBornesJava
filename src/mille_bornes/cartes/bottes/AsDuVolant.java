@@ -9,7 +9,7 @@ import mille_bornes.cartes.Categorie;
 public class AsDuVolant extends Botte {
 
     public AsDuVolant() {
-        super("AsDuVolant",Categorie.Botte);
+        super("AsDuVolant");
     }
 
     public boolean contre(Attaque carte){

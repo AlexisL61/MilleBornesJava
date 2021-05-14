@@ -95,6 +95,7 @@ public class TasDeCartes {
             cartes.add(new Borne(200));
         }
 
+        //Création bottes
         cartes.add(new AsDuVolant());
         cartes.add(new Citerne());
         cartes.add(new Increvable());

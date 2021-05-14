@@ -8,8 +8,8 @@ import mille_bornes.cartes.Categorie;
 
 public abstract class Botte extends Carte {
 
-    public Botte(String nom, Categorie categorie) {
-        super(nom, categorie);
+    public Botte(String nom) {
+        super(nom, Categorie.Botte);
     }
 
     public abstract boolean contre(Attaque carte);

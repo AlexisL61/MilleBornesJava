@@ -111,6 +111,7 @@ public class Joueur {
             joueurChoisi = input.nextInt();
         } catch (InputMismatchException e) {
             System.err.println("S'il vous plaît, entrez un entier");
+            input.nextLine();
             return choisitAdversaire(carte);
         }
 

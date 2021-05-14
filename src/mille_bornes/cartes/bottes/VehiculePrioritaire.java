@@ -9,7 +9,7 @@ import mille_bornes.cartes.Categorie;
 public class VehiculePrioritaire extends Botte {
 
     public VehiculePrioritaire() {
-        super("VehiculePrioritaire",Categorie.Botte);
+        super("VehiculePrioritaire");
     }
 
     @Override

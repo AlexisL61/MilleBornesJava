@@ -9,7 +9,7 @@ import mille_bornes.cartes.Categorie;
 public class Increvable extends Botte {
 
     public Increvable() {
-        super("Increvable", Categorie.Botte);
+        super("Increvable");
     }
 
     @Override

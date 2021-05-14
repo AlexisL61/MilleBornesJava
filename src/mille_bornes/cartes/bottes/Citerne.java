@@ -9,7 +9,7 @@ import mille_bornes.cartes.Categorie;
 public class Citerne extends Botte {
 
     public Citerne (){
-        super("Citerne", Categorie.Botte);
+        super("Citerne");
     }
 
     @Override

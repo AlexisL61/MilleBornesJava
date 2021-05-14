@@ -54,7 +54,6 @@ public abstract class Carte {
         if (nomCarte.equals("Citerne")) return new Citerne();
         if (nomCarte.equals("Increvable")) return new Increvable();
         if (nomCarte.equals("VehiculePrioritaire")) return new VehiculePrioritaire();
-        System.err.println("ERRRRRRRRRRRRRRRRRRRRRRRRRRREUR !!!!!!! "+nomCarte);
         return null;
     }
 

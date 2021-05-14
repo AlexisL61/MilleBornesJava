@@ -2,6 +2,7 @@ package mille_bornes;
 
 import mille_bornes.cartes.*;
 import mille_bornes.cartes.attaques.LimiteVitesse;
+import mille_bornes.cartes.parades.FinDeLimite;
 import org.json.JSONObject;
 
 import java.util.*;
@@ -24,24 +25,24 @@ public class Bot extends Joueur {
     public int choisitCarte() {
         System.out.println(montreLesCartes());
         if (difficulte == Difficulte.facile) {
-            return choisitFacile();
+            return choisitCarteFacile();
         }
         if (difficulte == Difficulte.moyen) {
             int numChoose = ((int) (Math.random() * 2));
             if (numChoose == 0) {
-                return choisitFacile();
+                return choisitCarteFacile();
             } else {
-                return choisitDifficile();
+                return choisitCarteDifficile();
             }
         }
         if (difficulte == Difficulte.difficile) {
-            int carteNum = choisitDifficile();
-            return choisitDifficile();
+            int carteNum = choisitCarteDifficile();
+            return choisitCarteDifficile();
         }
         return 0;
     }
 
-    private int choisitDifficile() {
+    private int choisitCarteDifficile() {
 
         if (super.getBataille() != null && super.getBataille() instanceof Attaque) {
 
@@ -55,7 +56,16 @@ public class Bot extends Joueur {
                     }
                 }
             }
-            //
+        }
+
+        //Il retire sa limite de vitesse s'il en a une
+        if (super.getEtat().getLimiteVitesse()){
+            for (int i = 0; i < super.getMain().size(); i++) {
+                Carte carte = super.getMain().get(i);
+                if (carte instanceof FinDeLimite){
+                    return (i+1);
+                }
+            }
         }
 
         //Borne
@@ -118,7 +128,7 @@ public class Bot extends Joueur {
         return numberChoose;
     }
 
-    private int choisitFacile() {
+    private int choisitCarteFacile() {
         int numberChoose = 0;
         Carte carte;
         boolean succeed = false;
@@ -156,7 +166,7 @@ public class Bot extends Joueur {
     public Joueur choisitAdversaire(Carte carte) {
         if (difficulte == Difficulte.facile) {
             if (checkSiJoueursAttaquables((Attaque) carte)) {
-                return choisitAdversaireRandom();
+                return choisitAdversaireFacile();
             } else {
                 return null;
             }
@@ -165,7 +175,7 @@ public class Bot extends Joueur {
             int numChoose = ((int) (Math.random() * 2));
             if (numChoose == 0) {
                 if (checkSiJoueursAttaquables((Attaque) carte)) {
-                    return choisitAdversaireRandom();
+                    return choisitAdversaireFacile();
                 } else {
                     return null;
                 }
@@ -176,7 +186,7 @@ public class Bot extends Joueur {
         return choisitAdversaireDifficile((Attaque) carte);
     }
 
-    private Joueur choisitAdversaireRandom() {
+    private Joueur choisitAdversaireFacile() {
         Joueur currentPlayer = this;
         ArrayList<Joueur> joueurs = new ArrayList<>();
         while (currentPlayer.getProchainJoueur() != this) {

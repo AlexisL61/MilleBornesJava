@@ -100,39 +100,6 @@ public class Jeu {
         return finalString.toString();
     }
 
-    public void sauvegarder() throws IOException {
-        String chemin = System.getenv("APPDATA");
-        File folder = new File(chemin + "\\" + "mille_borne_java_tp22c");
-        File file = new File(chemin + "\\" + "mille_borne_java_tp22c" + "\\save.json");
-
-        if (!folder.exists()) {
-            folder.mkdir();
-        }
-        if (!file.exists()) {
-            file.createNewFile();
-        }
-
-        JSONObject saveData = new JSONObject();
-        JSONObject jeuData = new JSONObject();
-        JSONArray players = new JSONArray();
-
-        for (int i = 0; i < this.joueurs.size(); i++) {
-            players.put(this.joueurs.get(i).toJson());
-            if (this.joueurs.get(i) == joueurActif) {
-                jeuData.put("currentPlayer", i);
-            }
-        }
-        jeuData.put("sabot", sabot.toJson());
-        jeuData.put("defausse", defausse.toJson());
-        saveData.put("players", players);
-        saveData.put("jeu", jeuData);
-
-        FileWriter fw = new FileWriter(file.getAbsoluteFile());
-        BufferedWriter bw = new BufferedWriter(fw);
-        bw.write(saveData.toString());
-        bw.close();
-    }
-
     public boolean joue(boolean pioche) throws IOException {
         activeProchainJoueurEtTireCarte(pioche);
         System.out.println("-------------------------------------------");
@@ -247,7 +214,39 @@ public class Jeu {
         } catch (FileNotFoundException e) {
             return null; //Le fichier n'existe pas
         }
+    }
 
+    public void sauvegarder() throws IOException {
+        String chemin = System.getenv("APPDATA");
+        File folder = new File(chemin + "\\" + "mille_borne_java_tp22c");
+        File file = new File(chemin + "\\" + "mille_borne_java_tp22c" + "\\save.json");
+
+        if (!folder.exists()) {
+            folder.mkdir();
+        }
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+
+        JSONObject saveData = new JSONObject();
+        JSONObject jeuData = new JSONObject();
+        JSONArray players = new JSONArray();
+
+        for (int i = 0; i < this.joueurs.size(); i++) {
+            players.put(this.joueurs.get(i).toJson());
+            if (this.joueurs.get(i) == joueurActif) {
+                jeuData.put("currentPlayer", i);
+            }
+        }
+        jeuData.put("sabot", sabot.toJson());
+        jeuData.put("defausse", defausse.toJson());
+        saveData.put("players", players);
+        saveData.put("jeu", jeuData);
+
+        FileWriter fw = new FileWriter(file.getAbsoluteFile());
+        BufferedWriter bw = new BufferedWriter(fw);
+        bw.write(saveData.toString());
+        bw.close();
     }
 
 
