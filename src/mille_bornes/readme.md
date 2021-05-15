@@ -4,7 +4,7 @@ Nom de la méthode | Classe | Modifications apportées
 --- | --- | ---
 activeProchainJoueurEtTireCarte | Jeu | Désormais, cette méthode prend un nouveau booléen en paramètre. Car nous nous sommes rendu compte que lors d'un coup fourré, le joueur tire une carte. Mais s'il effectue son coup fourré en fin de partie, il se peut le sabot ne contienne plus de carte. Et cela lève une exception lors de la pioche. Pour éviter cela, nous regardons si le joueur peut piocher ou non et entrons le résultat en paramètre. Si oui, la fonction fera piocher le joueur, non sinon. De plus, ce paramètre est utile lors d'un chargement de sauvegarde. En effet, lors du chargement de sauvegarde, le joueur qui doit jouer a déjà pioché. Cette argument permet de relancer le jeu en lançant la fonction "joue" sans lui faire retirer une carte.
 montreLesCartes | Joueur | Cette méthode a été ajoutée pour montrer plus facilement les cartes du joueur. Lors de son appel, la fonction va afficher dans la console les cartes du joueur.
-
+Jeu (constructeur) | Jeu | Le constructeur de Jeu sans paramètre, quand il est appelé, demande à l'utilisateur d'entrer les joueurs de la partie. Cela permet une meilleure ergonomie pour ajouter les joueurs. Il est compatible avec l'extension bot car nous demandons si le joueur qui s'apprête à être ajouté est un bot ou non.
 # Extensions
 
 ## Bottes

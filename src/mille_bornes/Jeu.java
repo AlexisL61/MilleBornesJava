@@ -19,21 +19,27 @@ public class Jeu {
     public Jeu() {
         Scanner sc = new Scanner(System.in);
         String reponse = "";
-        while (!reponse.equals("fini") && joueurs.size() < 4 || joueurs.size() <= 1) {
-            String reponseBot;
-            System.out.println("Voulez-vous jouer avec un bot? (Tapez oui pour jouer avec un bot, autre chose sinon)");
+        String reponseBot = " ";
+        while (!reponseBot.equals("fini") && joueurs.size() < 4 || joueurs.size() <= 1) {
+            System.out.println("Voulez-vous jouer avec un bot? (Tapez \"oui\" pour jouer avec un bot, \"fini\" si vous ne voulez plus ajouter de joueur, autre chose pour ajouter un joueur humain)");
             reponseBot = sc.nextLine();
-            int botDifficulty = 0;
-            if (reponseBot.equals("oui")) {
-                while (botDifficulty != 1 && botDifficulty != 2 && botDifficulty != 3) {
-                    System.out.println("Quel sera le niveau de ce bot (1 pour facile, 2 pour moyen, 3 pour difficile)");
-                    botDifficulty = sc.nextInt();
-                    sc.nextLine();
+            if (!reponseBot.equals("fini")) {
+                int botDifficulty = -1;
+                if (reponseBot.equals("oui")) {
+                    while (botDifficulty != 1 && botDifficulty != 2 && botDifficulty != 3) {
+                        System.out.println("Quel sera le niveau de ce bot (1 pour facile, 2 pour moyen, 3 pour difficile)");
+                        try {
+                            botDifficulty = sc.nextInt();
+                            sc.nextLine();
+                        } catch (InputMismatchException e) {
+                            sc.nextLine();
+                            botDifficulty = -1;
+                        }
+
+                    }
                 }
-            }
-            System.out.println("Entrez le nom du joueur/bot n°" + (joueurs.size() + 1) + ". (Tapez \"fini\" si vous ne voulez entrer de joueur.)");
-            reponse = sc.nextLine();
-            if (!reponse.equals("fini")) {
+                System.out.println("Entrez le nom du joueur/bot n°" + (joueurs.size() + 1) + ".");
+                reponse = sc.nextLine();
                 if (botDifficulty > 0 && botDifficulty < 4) {
                     ajouteJoueurs(new Bot(reponse, Difficulte.values()[botDifficulty - 1]));
                 } else {
@@ -52,9 +58,9 @@ public class Jeu {
         JSONArray totalJoueurs = (JSONArray) save.get("players");
         JSONObject jeu = (JSONObject) save.get("jeu");
         for (int i = 0; i < totalJoueurs.length(); i++) {
-            if (!(boolean)((JSONObject) totalJoueurs.get(i)).get("bot")) {
+            if (!(boolean) ((JSONObject) totalJoueurs.get(i)).get("bot")) {
                 joueurs.add(new Joueur((JSONObject) totalJoueurs.get(i)));
-            }else{
+            } else {
                 joueurs.add(new Bot((JSONObject) totalJoueurs.get(i)));
             }
         }
