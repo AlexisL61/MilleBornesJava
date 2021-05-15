@@ -72,6 +72,11 @@ td{
 <td>Jeu</td>
 <td>Désormais, cette méthode prend un nouveau booléen en paramètre. Car nous nous sommes rendu compte que lors d’un coup fourré, le joueur tire une carte. Mais s’il effectue son coup fourré en fin de partie, il se peut le sabot ne contienne plus de carte. Et cela lève une exception lors de la pioche. Pour éviter cela, nous regardons si le joueur peut piocher ou non et entrons le résultat en paramètre. Si oui, la fonction fera piocher le joueur, non sinon. De plus, ce paramètre est utile lors d’un chargement de sauvegarde. En effet, lors du chargement de sauvegarde, le joueur qui doit jouer a déjà pioché. Cette argument permet de relancer le jeu en lançant la fonction “joue” sans lui faire retirer une carte.</td>
 </tr>
+<tr>
+  <td>montreLesCartes</td>
+  <td>Joueur</td>
+  <td>Cette méthode a été ajoutée pour montrer plus facilement les cartes du joueur. Lors de son appel, la fonction va afficher dans la console les cartes du joueur.</td>
+  </tr>
 </tbody>
 </table>
 </div>
