@@ -23,7 +23,6 @@ public class Bot extends Joueur {
 
     @Override
     public int choisitCarte() {
-        System.out.println(montreLesCartes());
         if (difficulte == Difficulte.facile) {
             return choisitCarteFacile();
         }
